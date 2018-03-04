@@ -1,0 +1,40 @@
+.message {
+  padding-top: 80px;
+  .container {
+    max-width: 460px;
+    text-align: center;
+  }
+}
+
+.notification {
+  position: fixed;
+  top: 115px;
+  right: -100%;
+  background-color: #fff;
+  transition: all 0.5s ease-in-out;
+  border-radius: 4px;
+  padding: 15px 15px 15px 15px;
+  box-sizing: border-box;
+  width: 240px;
+  z-index: 1001;
+  &.open {
+    right: 5px;
+  }
+  .btn-close {
+    position: absolute;
+    right: 7px;
+    top: 7px;
+    height: 12px;
+    width: 12px;
+  }
+  .title {
+    font-weight: 400;
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+  &.error {
+    .title {
+      color: red;
+    }
+  }
+}

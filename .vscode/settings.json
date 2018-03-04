@@ -1,0 +1,58 @@
+// Place your settings in this file to overwrite the default settings
+{
+  "files.autoSave": "onFocusChange",
+  "editor.fontFamily": "'SourceCodePro-Medium', ＭＳ ゴシック, 'MS Gothic', monospace",
+  "emmet.syntaxProfiles": {
+    "javascript": "jsx"
+  },
+  "editor.renderIndentGuides": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/.sass-cache": true,
+    "**/bower_components": true,
+    "**/node_modules": true,
+    "**/static_collected": true,
+    "**/assets": true,
+    "**/gulp_built": true,
+    "**/dist": true,
+    "**/build": true
+  },
+  "editor.formatOnSave": true,
+  "editor.snippetSuggestions": "top",
+  "beautify.config": {
+    "indent_size": 2,
+    "end_with_newline": true,
+    "css": {
+      "newline_between_rules": true,
+      "space_around_combinator": true,
+      "selector_separator_newline": false
+    },
+    "js": {},
+    "html": {
+      "wrap_attributes": "force"
+    }
+  },
+  "standard.autoFixOnSave": true,
+  "standard.options": {
+    "globals": [
+      "fetch",
+      "angular",
+      "gettext"
+    ],
+    "ignore": [
+      "node_modules/**"
+    ],
+    "parser": "babel-eslint"
+  },
+  "html.format.endWithNewline": true,
+  "editor.tabSize": 2,
+  "git.enabled": false,
+  "editor.detectIndentation": false,
+  "html.format.indentInnerHtml": true,
+  "editor.rulers": [80, 120],
+  "eslint.autoFixOnSave": true,
+  "window.zoomLevel": 0
+}

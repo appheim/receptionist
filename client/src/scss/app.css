@@ -1,0 +1,170 @@
+@import url(~semantic-ui-css/semantic.css);
+body {
+  font: 14px/1.4 'Helvetia', 'Arial', 'sans-serif'; }
+
+body, html, #root {
+  height: 100%; }
+
+a {
+  text-decoration: none;
+  cursor: pointer; }
+  a:hover {
+    text-decoration: none; }
+
+* {
+  outline: none !important; }
+
+.hidden-text {
+  font-size: 0 !important; }
+
+.wrap {
+  min-height: 100%;
+  height: 100%;
+  padding: 60px 0 40px;
+  position: relative;
+  box-sizing: border-box; }
+  .wrap.full {
+    height: 100%; }
+  .wrap.auto {
+    height: auto; }
+  .wrap.bottom {
+    padding-bottom: 0; }
+  .wrap.unerBottom {
+    padding-bottom: 80px; }
+
+.container {
+  width: 1024px;
+  margin: auto;
+  padding: 0; }
+  @media (max-width: 1024px) {
+    .container {
+      padding: 0 15px;
+      width: 100%; } }
+
+main {
+  display: block;
+  padding: 15px 0;
+  background-color: #fafafa;
+  overflow-y: auto;
+  height: 100%; }
+
+.input-custom, .field select, .textarea-custom {
+  width: 100%;
+  border: 2px solid #aeaeae !important;
+  padding: 11px 15px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none; }
+  .input-custom .react-phone-number-input__icon, .field select .react-phone-number-input__icon, .textarea-custom .react-phone-number-input__icon {
+    border: 0; }
+  .input-custom .rrui__select__options:not(.rrui__select__options--menu), .field select .rrui__select__options:not(.rrui__select__options--menu), .textarea-custom .rrui__select__options:not(.rrui__select__options--menu) {
+    z-index: 2;
+    width: 100%;
+    left: 0; }
+
+.field {
+  position: relative;
+  margin-bottom: 15px; }
+  .field .label-text {
+    margin-bottom: 8px;
+    font-size: 14px;
+    text-align: left; }
+  .field label {
+    display: block;
+    font-weight: normal;
+    margin-bottom: 0; }
+  .field select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none; }
+  .field .radio-custom {
+    display: inline-block; }
+
+.textarea-custom {
+  resize: none;
+  min-height: 125px;
+  overflow: hidden;
+  overflow-y: auto; }
+
+.ui.selection.dropdown {
+  padding: 13px 15px 14px;
+  border: 2px solid #aeaeae !important;
+  background-color: #fff !important;
+  border-radius: 4px; }
+  .ui.selection.dropdown .default.text {
+    color: #aeaeae !important; }
+
+.ui.multiple.dropdown {
+  padding: 6px 5px 5px; }
+  .ui.multiple.dropdown.selection.multiple {
+    min-height: 38px; }
+
+.message-error {
+  position: absolute;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 11px 15px;
+  color: red;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 1; }
+
+header {
+  background-color: #fff;
+  padding: 15px 0;
+  height: 60px;
+  box-sizing: border-box;
+  z-index: 2;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.06);
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%; }
+
+footer {
+  height: 40px;
+  background-color: #fff;
+  padding: 6px;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-top: 15px; }
+
+.auth .container {
+  width: 600px; }
+
+.message {
+  padding-top: 80px; }
+  .message .container {
+    max-width: 460px;
+    text-align: center; }
+
+.notification {
+  position: fixed;
+  top: 115px;
+  right: -100%;
+  background-color: #fff;
+  transition: all 0.5s ease-in-out;
+  border-radius: 4px;
+  padding: 15px 15px 15px 15px;
+  box-sizing: border-box;
+  width: 240px;
+  z-index: 1001; }
+  .notification.open {
+    right: 5px; }
+  .notification .btn-close {
+    position: absolute;
+    right: 7px;
+    top: 7px;
+    height: 12px;
+    width: 12px; }
+  .notification .title {
+    font-weight: 400;
+    font-size: 15px;
+    margin-bottom: 5px; }
+  .notification.error .title {
+    color: red; }

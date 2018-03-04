@@ -1,0 +1,140 @@
+body {
+  font: 14px/1.4 'Helvetia', 'Arial', 'sans-serif';
+}
+
+body, html, #root {
+  height: 100%;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+* {
+  outline: none !important;
+}
+
+.hidden-text {
+  font-size: 0 !important;
+}
+
+.wrap {
+  min-height: 100%;
+  height: 100%;
+  padding: 60px 0 40px;
+  position: relative;
+  box-sizing: border-box;
+  &.full {
+    height: 100%;
+  }
+  &.auto {
+    height: auto;
+  }
+  &.bottom {
+    padding-bottom: 0;
+  }
+  &.unerBottom {
+    padding-bottom: 80px;
+  }
+}
+
+.container {
+  width: 1024px;
+  margin: auto;
+  padding: 0;
+  @media(max-width: 1024px) {
+    padding: 0 15px;
+    width: 100%;
+  }
+}
+
+main {
+  display: block;
+  padding: 15px 0;
+  background-color: #fafafa;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.input-custom {
+  width: 100%;
+  border: 2px solid #aeaeae !important;
+  padding: 11px 15px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  .react-phone-number-input__icon {
+    border: 0;
+  }
+  .rrui__select__options:not(.rrui__select__options--menu) {
+    z-index: 2;
+    width: 100%;
+    left: 0;
+  }
+}
+
+.field {
+  position: relative;
+  margin-bottom: 15px;
+  .label-text {
+    margin-bottom: 8px;
+    font-size: 14px;
+    text-align: left;
+  }
+  label {
+    display: block;
+    font-weight: normal;
+    margin-bottom: 0;
+  }
+  select {
+    @extend .input-custom;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  .radio-custom {
+    display: inline-block;
+  }
+}
+
+.textarea-custom {
+  @extend .input-custom;
+  resize: none;
+  min-height: 125px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.ui.selection.dropdown {
+  padding: 13px 15px 14px;
+  border: 2px solid #aeaeae !important;
+  background-color: #fff !important;
+  border-radius: 4px;
+  .default.text {
+    color: #aeaeae !important;
+  }
+}
+
+.ui.multiple.dropdown {
+  padding: 6px 5px 5px;
+  &.selection.multiple {
+    min-height: 38px;
+  }
+}
+
+.message-error {
+  position: absolute;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 11px 15px;
+  color: red;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 1;
+}
