@@ -4,6 +4,8 @@ const User = require('../models/user.model');
 const APIError = require('../utils/APIError');
 
 const ADMIN = 'admin';
+const USER = 'user';
+const AUTHORIZED = [ADMIN, USER];
 const LOGGED_USER = '_loggedUser';
 
 const handleJWT = (req, res, next, roles) => async (err, user, info) => {
@@ -43,6 +45,8 @@ const handleJWT = (req, res, next, roles) => async (err, user, info) => {
 
 exports.ADMIN = ADMIN;
 exports.LOGGED_USER = LOGGED_USER;
+exports.USER = USER;
+exports.AUTHORIZED = AUTHORIZED;
 
 exports.authorize = (roles = User.roles) => (req, res, next) =>
   passport.authenticate(
