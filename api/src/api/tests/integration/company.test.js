@@ -12,7 +12,6 @@ const User = require('../../models/user.model');
 const Company = require('../../models/company.model');
 
 describe('Company API', async () => {
-  let userAccessToken;
   let dbUsers;
 
   const password = '123456';
@@ -90,34 +89,50 @@ describe('Company API', async () => {
     it('should get company users', async () => {
       const { user, accessToken } = await User.findAndGenerateToken(dbUsers.jonSnow);
 
-      return request(app)
+      let res = request(app)
         .post('/v1/companies')
         .set('Authorization', `Bearer ${ accessToken }`)
         .send({ name: 'Get company users' })
         .expect(httpStatus.CREATED)
-        .then(async (res) => {
+        .then(_res => {
+          res = _res;
+        });
 
-          const user1 = await (new User({
-            email: 'test1@test.com',
-            password: passwordHashed,
-            name: 'Test1'
-          })).save();
-          const user2 = await (new User({
-            email: 'test2@test.com',
-            password: passwordHashed,
-            name: 'Test1'
-          })).save();
+      const user1 = await (new User({
+        email: 'test1@test.com',
+        password: passwordHashed,
+        name: 'Test 1'
+      })).save();
+      const user2 = await (new User({
+        email: 'test2@test.com',
+        password: passwordHashed,
+        name: 'Test 2'
+      })).save();
 
-          const company = await Company.findOne({ _id: res.body.id });
-          company.users.push(user1._id);
-          company.users.push(user2._id);
-          await company.save();
+      const company = await Company.findOne({ _id: res.body.id });
+      company.users.push(user1._id);
+      company.users.push(user2._id);
+      await company.save();
 
+      await request(app)
+        .get(`/v1/companies/${ res.body.id }/users`)
+        .set('Authorization', `Bearer ${ accessToken }`)
+        .set('Content-Type', 'application/json')
+        .expect(httpStatus.OK)
+        .then(res => {
+          expect(res.body).to.deep.include({ _id: user._id.toString(), name: user.name });
+          expect(res.body).to.deep.include({ _id: user1._id.toString(), name: user1.name });
+          expect(res.body).to.deep.include({ _id: user2._id.toString(), name: user2.name });
+        });
 
-          return request(app)
-            .get(`/v1/companies/${ res.body.id }/users`)
-            .set('Authorization', `Bearer ${ accessToken }`)
-            .expect(httpStatus.OK);
+      // search
+      return request(app)
+        .get(`/v1/companies/${ res.body.id }/users?search=test`)
+        .set('Authorization', `Bearer ${ accessToken }`)
+        .set('Content-Type', 'application/json')
+        .expect(httpStatus.OK)
+        .then(res => {
+          expect(res.body.length).to.equal(2);
         });
     });
   });

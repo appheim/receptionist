@@ -65,6 +65,14 @@ router
    *
    * @apiHeader {String} Athorization  User's access token
    *
+   *
+   * @apiParam {String} [search]  Query string param. String to search in user name
+   * @apiParam {Number} [limit]  Query string param. limit number of users
+   *
+   * @apiSuccess {Object[]} users       List of users
+   * @apiSuccess {String}   users._id   User id
+   * @apiSuccess {String}   users.name  User's name
+   *
    * @apiError (Unauthorized 401)  Unauthorized     Only authenticated users can create the data
    */
   .get(authorize(AUTHORIZED), validate(listUsers), controller.listUsers);

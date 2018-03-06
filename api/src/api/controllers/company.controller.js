@@ -69,7 +69,7 @@ exports.addUser = async (req, res, next) => {
 
 exports.listUsers = async (req, res, next) => {
   try {
-    const users = await req.locals.company.listUsers(req.params.query);
+    const users = await Company.listUsers(req.locals.company._id, req.query);
 
     res.status(httpStatus.OK);
     res.json(users);

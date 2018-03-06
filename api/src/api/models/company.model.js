@@ -37,21 +37,6 @@ companySchema.method({
 
     return transformed;
   },
-
-  /**
-   * List users in descending order of 'createdAt' timestamp.
-   *
-   * @param {string} id
-   * @param {number} limit - Limit number of users to be returned.
-   * @returns {Promise<User[]>}
-   */
-  listUsers({ id, limit = 10 }) {
-    return this.populate({
-        path: 'users',
-        select: 'name',
-      })
-      // .limit(limit);
-  },
 });
 
 /**
@@ -82,7 +67,43 @@ companySchema.statics = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  /**
+   * List users
+   *
+   * @param {string} id - Company id
+   * @param {number} limit - Limit number of users to be returned.
+   * @param {string} search - string to search for
+   * @returns {Query}
+   */
+  async listUsers(id, { limit = 10, search = '' }) {
+    try {
+      let populateOptions = {
+        path: 'users',
+        select: 'name',
+        options: {
+          limit: limit
+        }
+      };
+
+      if (search) {
+        populateOptions.match = {
+          name: {
+            $regex: new RegExp(search, 'i')
+          }
+        }
+      }
+
+      let company = await this.findOne({ _id: id })
+        .populate(populateOptions)
+        .exec();
+
+      return company.users;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 module.exports = mongoose.model('Company', companySchema);
