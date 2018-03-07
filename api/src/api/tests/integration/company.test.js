@@ -24,13 +24,19 @@ describe('Company API', async () => {
         password: passwordHashed,
         name: 'Jon Snow',
       },
+      aUser2: {
+        email: 'aUser2@gmail.com',
+        password: passwordHashed,
+        name: 'User Two'
+      }
     };
 
     await Company.remove({});
     await User.remove({});
-    await User.insertMany([dbUsers.jonSnow]);
+    await User.insertMany([dbUsers.jonSnow, dbUsers.aUser2]);
 
     dbUsers.jonSnow.password = password;
+    dbUsers.aUser2.password = password;
   });
 
   describe('POST /v1/companies', async () => {
@@ -88,8 +94,8 @@ describe('Company API', async () => {
   describe('GET /v1/companies/:companyId/users', async () => {
     it('should get company users', async () => {
       const { user, accessToken } = await User.findAndGenerateToken(dbUsers.jonSnow);
-
-      let res = request(app)
+      let res;
+      await request(app)
         .post('/v1/companies')
         .set('Authorization', `Bearer ${ accessToken }`)
         .send({ name: 'Get company users' })
@@ -134,6 +140,52 @@ describe('Company API', async () => {
         .then(res => {
           expect(res.body.length).to.equal(2);
         });
+    });
+  });
+
+  describe('PUT /v1/companies/:companyId/config', async () => {
+    it('should not update company config when user is not admin', async () => {
+      const accessToken = (await User.findAndGenerateToken(dbUsers.jonSnow)).accessToken;
+      const accessTokenNotAdmin = (await User.findAndGenerateToken(dbUsers.aUser2)).accessToken;
+      let res;
+
+      await request(app)
+        .post('/v1/companies')
+        .set('Authorization', `Bearer ${ accessToken }`)
+        .send({ name: 'Get company config' })
+        .expect(httpStatus.CREATED)
+        .then(_res => {
+          res = _res;
+        });
+
+      return request(app)
+        .put(`/v1/companies/${ res.body.id }/config`)
+        .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
+        .set('Content-Type', 'application/json')
+        .send({ files: [], nda: false })
+        .expect(httpStatus.FORBIDDEN);
+    });
+
+
+    it('should update company config', async () => {
+      const { user, accessToken } = await User.findAndGenerateToken(dbUsers.jonSnow);
+      let res;
+
+      await request(app)
+        .post('/v1/companies')
+        .set('Authorization', `Bearer ${ accessToken }`)
+        .send({ name: 'Get company config' })
+        .expect(httpStatus.CREATED)
+        .then(_res => {
+          res = _res;
+        });
+
+      return request(app)
+        .put(`/v1/companies/${ res.body.id }/config`)
+        .set('Authorization', `Bearer ${ accessToken }`)
+        .set('Content-Type', 'application/json')
+        .send({ files: [], nda: false })
+        .expect(httpStatus.OK);
     });
   });
 });

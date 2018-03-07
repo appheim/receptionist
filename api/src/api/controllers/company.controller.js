@@ -76,5 +76,4 @@ exports.listUsers = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
-
 };

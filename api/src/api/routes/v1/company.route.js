@@ -6,12 +6,16 @@ const validate = require('express-validation');
 const router = express.Router();
 
 const controller = require('../../controllers/company.controller');
+const configController = require('../../controllers/config.controller');
 const { authorize, AUTHORIZED } = require('../../middlewares/auth');
 const {
   createCompany,
   addUser,
   listUsers
 } = require('../../validations/company.validation');
+const {
+  upsert
+} = require('../../validations/config.validation');
 
 router.param('companyId', controller.load);
 
@@ -76,5 +80,9 @@ router
    * @apiError (Unauthorized 401)  Unauthorized     Only authenticated users can create the data
    */
   .get(authorize(AUTHORIZED), validate(listUsers), controller.listUsers);
+
+router
+  .route('/:companyId/config')
+  .put(authorize(AUTHORIZED), validate(upsert), configController.upsert);
 
 module.exports = router;
