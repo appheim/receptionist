@@ -83,6 +83,7 @@ router
 
 router
   .route('/:companyId/config')
-  .put(authorize(AUTHORIZED), validate(upsert), configController.upsert);
+  .get(authorize(AUTHORIZED), validate(upsert), configController.get)
+  .put(authorize(AUTHORIZED), configController.upsert);
 
 module.exports = router;

@@ -1,6 +1,8 @@
 /**
  * Created by Vadym Yatsyuk on 04.03.18
  */
+const omit = require('lodash').omit;
+
 const mongoose = require('mongoose');
 const request = require('supertest');
 const httpStatus = require('http-status');
@@ -10,6 +12,7 @@ const bcrypt = require('bcryptjs');
 const app = require('../../../index');
 const User = require('../../models/user.model');
 const Company = require('../../models/company.model');
+const Config = require('../../models/config.model');
 
 describe('Company API', async () => {
   let dbUsers;
@@ -23,20 +26,15 @@ describe('Company API', async () => {
         email: 'jonsnow@gmail.com',
         password: passwordHashed,
         name: 'Jon Snow',
-      },
-      aUser2: {
-        email: 'aUser2@gmail.com',
-        password: passwordHashed,
-        name: 'User Two'
       }
     };
 
+    await Config.remove({});
     await Company.remove({});
     await User.remove({});
-    await User.insertMany([dbUsers.jonSnow, dbUsers.aUser2]);
+    await User.insertMany([dbUsers.jonSnow]);
 
     dbUsers.jonSnow.password = password;
-    dbUsers.aUser2.password = password;
   });
 
   describe('POST /v1/companies', async () => {
@@ -145,9 +143,19 @@ describe('Company API', async () => {
 
   describe('PUT /v1/companies/:companyId/config', async () => {
     it('should not update company config when user is not admin', async () => {
-      const accessToken = (await User.findAndGenerateToken(dbUsers.jonSnow)).accessToken;
-      const accessTokenNotAdmin = (await User.findAndGenerateToken(dbUsers.aUser2)).accessToken;
       let res;
+      const accessToken = (await User.findAndGenerateToken(dbUsers.jonSnow)).accessToken;
+      let aUser2 = {
+        email: 'aUser2@gmail.com',
+        password: passwordHashed,
+        name: 'User Two'
+      };
+
+      await User.insertMany([aUser2]);
+
+      aUser2.password = password;
+
+      const accessTokenNotAdmin = (await User.findAndGenerateToken(aUser2)).accessToken;
 
       await request(app)
         .post('/v1/companies')
@@ -169,23 +177,93 @@ describe('Company API', async () => {
 
     it('should update company config', async () => {
       const { user, accessToken } = await User.findAndGenerateToken(dbUsers.jonSnow);
-      let res;
+
+      const company = await (Company({
+        name: 'Update company config',
+        adminId: user._id
+      })).save();
+
+      let fields = [];
+      let nda = false;
 
       await request(app)
-        .post('/v1/companies')
-        .set('Authorization', `Bearer ${ accessToken }`)
-        .send({ name: 'Get company config' })
-        .expect(httpStatus.CREATED)
-        .then(_res => {
-          res = _res;
-        });
-
-      return request(app)
-        .put(`/v1/companies/${ res.body.id }/config`)
+        .put(`/v1/companies/${ company._id }/config`)
         .set('Authorization', `Bearer ${ accessToken }`)
         .set('Content-Type', 'application/json')
-        .send({ files: [], nda: false })
-        .expect(httpStatus.OK);
+        .send({ fields, nda })
+        .expect(httpStatus.OK)
+        .then(async () => {
+          let config = await Config.findOne({ companyId: company._id });
+          expect(config).to.not.be.null;
+          expect(config.fields).to.be.deep.equal(fields);
+          expect(config.nda).to.be.equal(nda);
+        });
+
+      fields = [{
+        name: 'name',
+        kind: 'text',
+        required: true
+      }];
+      nda = true;
+
+      return request(app)
+        .put(`/v1/companies/${ company._id }/config`)
+        .set('Authorization', `Bearer ${ accessToken }`)
+        .set('Content-Type', 'application/json')
+        .send({ fields, nda })
+        .expect(httpStatus.OK)
+        .then(async () => {
+          let config = await Config.findOne({ companyId: company._id });
+          expect(config).to.not.be.null;
+          expect(config.fields.map(v => omit(v.toObject(), ['_id']))).to.be.deep.equal(fields);
+          expect(config.nda).to.be.equal(nda);
+        });
+    });
+  });
+
+  describe('GET /v1/companies/:companyId/config', async () => {
+    it('should return company config', async () => {
+      const { user, accessToken } = await User.findAndGenerateToken(dbUsers.jonSnow);
+
+      const company = await (Company({
+        name: 'Get company config',
+        adminId: user._id
+      })).save();
+
+      const configObject = {
+        companyId: company._id,
+        fields: [
+          {
+            name: 'Full name',
+            kind: 'text',
+            required: true
+          },
+          {
+            name: 'Address',
+            kind: 'text',
+            required: false
+          }
+        ],
+        nda: true
+      };
+      await (Config(configObject)).save();
+      configObject.companyId = company._id.toString();
+
+      return request(app)
+        .get(`/v1/companies/${ company._id }/config`)
+        .set('Authorization', `Bearer ${ accessToken }`)
+        .expect(httpStatus.OK)
+        .then(res => {
+          delete res.body.__v;
+          delete res.body._id;
+          delete res.body.createdAt;
+          delete res.body.updatedAt;
+          res.body.fields.forEach((v, i) => {
+            delete res.body.fields[i]._id;
+          });
+
+          expect(res.body).to.be.deep.equal(configObject);
+        });
     });
   });
 });

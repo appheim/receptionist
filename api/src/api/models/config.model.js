@@ -10,9 +10,11 @@ const configSchema = new mongoose.Schema({
     ref: 'Company',
     required: true,
   },
-  fields: [
-    Object
-  ],
+  fields: [{
+    name: String,
+    kind: String,
+    required: Boolean
+  }],
   nda: {
     type: Boolean,
     default: false
