@@ -82,7 +82,24 @@ router
   .get(authorize(AUTHORIZED), validate(listUsers), controller.listUsers);
 
 router
-  .route('/:companyId/config')
+  .route('/:companyId/configs')
+  /**
+   * @api {post} v1/companies/:companyId/configs Get config
+   * @apiDescription Get company config
+   * @apiVersion 1.0.0
+   * @apiName GetConfig
+   * @apiGroup Company
+   * @apiPermission user
+   *
+   * @apiHeader {String} Athorization  User's access token
+   *
+   * @apiSuccess {Object}   config              List of users
+   * @apiSuccess {String}   config.companyId    Company id
+   * @apiSuccess {String}   config.nda          nda
+   * @apiSuccess {Object}   config.fields       fields
+   *
+   * @apiError (Unauthorized 401)  Unauthorized     Only authenticated users can create the data
+   */
   .get(authorize(AUTHORIZED), validate(upsert), configController.get)
   .put(authorize(AUTHORIZED), configController.upsert);
 

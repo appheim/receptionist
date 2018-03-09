@@ -141,7 +141,7 @@ describe('Company API', async () => {
     });
   });
 
-  describe('PUT /v1/companies/:companyId/config', async () => {
+  describe('PUT /v1/companies/:companyId/configs', async () => {
     it('should not update company config when user is not admin', async () => {
       let res;
       const accessToken = (await User.findAndGenerateToken(dbUsers.jonSnow)).accessToken;
@@ -167,7 +167,7 @@ describe('Company API', async () => {
         });
 
       return request(app)
-        .put(`/v1/companies/${ res.body.id }/config`)
+        .put(`/v1/companies/${ res.body.id }/configs`)
         .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
         .set('Content-Type', 'application/json')
         .send({ files: [], nda: false })
@@ -187,7 +187,7 @@ describe('Company API', async () => {
       let nda = false;
 
       await request(app)
-        .put(`/v1/companies/${ company._id }/config`)
+        .put(`/v1/companies/${ company._id }/configs`)
         .set('Authorization', `Bearer ${ accessToken }`)
         .set('Content-Type', 'application/json')
         .send({ fields, nda })
@@ -207,7 +207,7 @@ describe('Company API', async () => {
       nda = true;
 
       return request(app)
-        .put(`/v1/companies/${ company._id }/config`)
+        .put(`/v1/companies/${ company._id }/configs`)
         .set('Authorization', `Bearer ${ accessToken }`)
         .set('Content-Type', 'application/json')
         .send({ fields, nda })
@@ -221,7 +221,7 @@ describe('Company API', async () => {
     });
   });
 
-  describe('GET /v1/companies/:companyId/config', async () => {
+  describe('GET /v1/companies/:companyId/configs', async () => {
     it('should return company config', async () => {
       const { user, accessToken } = await User.findAndGenerateToken(dbUsers.jonSnow);
 
@@ -250,7 +250,7 @@ describe('Company API', async () => {
       configObject.companyId = company._id.toString();
 
       return request(app)
-        .get(`/v1/companies/${ company._id }/config`)
+        .get(`/v1/companies/${ company._id }/configs`)
         .set('Authorization', `Bearer ${ accessToken }`)
         .expect(httpStatus.OK)
         .then(res => {
