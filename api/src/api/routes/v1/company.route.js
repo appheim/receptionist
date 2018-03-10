@@ -84,7 +84,7 @@ router
 router
   .route('/:companyId/configs')
   /**
-   * @api {post} v1/companies/:companyId/configs Get config
+   * @api {get} v1/companies/:companyId/configs Get config
    * @apiDescription Get company config
    * @apiVersion 1.0.0
    * @apiName GetConfig
@@ -93,14 +93,30 @@ router
    *
    * @apiHeader {String} Athorization  User's access token
    *
-   * @apiSuccess {Object}   config              List of users
-   * @apiSuccess {String}   config.companyId    Company id
-   * @apiSuccess {String}   config.nda          nda
-   * @apiSuccess {Object}   config.fields       fields
+   * @apiSuccess {String}   companyId    Company id
+   * @apiSuccess {String}   nda          nda
+   * @apiSuccess {Object}   fields       fields
    *
-   * @apiError (Unauthorized 401)  Unauthorized     Only authenticated users can create the data
+   * @apiError (Unauthorized 401)   Unauthorized     Only authenticated users can create the data
+   * @apiError (Not Found 404)      NotFound         Config does not exist
    */
   .get(authorize(AUTHORIZED), validate(upsert), configController.get)
+  /**
+   * @api {put} v1/companies/:companyId/configs Update config
+   * @apiDescription Update company config
+   * @apiVersion 1.0.0
+   * @apiName UpdateConfig
+   * @apiGroup Company
+   * @apiPermission user
+   *
+   * @apiHeader {String} Athorization  User's access token
+   *
+   * @apiParam  {[Object]}      [fields]      List of fields
+   * @apiParam  {Boolean}       [nda]         Flag to show NDA
+   *
+   * @apiError (Unauthorized 401)   Unauthorized      Only authenticated users can create the data
+   * @apiError (Forbidden 403)      Forbidden         Only company admin can modify the config
+   */
   .put(authorize(AUTHORIZED), configController.upsert);
 
 module.exports = router;
