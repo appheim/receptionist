@@ -266,4 +266,38 @@ describe('Company API', async () => {
         });
     });
   });
+
+  describe('POS /v1/companies/:companyId/visitors', async () => {
+    let admin;
+    let adminAccessToken;
+    let aUser2 = {
+      email: 'aUser2@gmail.com',
+      password: passwordHashed,
+      name: 'User Two'
+    };
+    let accessTokenNotAdmin;
+    let company;
+
+    beforeEach(async () => {
+      const { user, accessToken } = await User.findAndGenerateToken(dbUsers.jonSnow);
+      admin = user;
+      adminAccessToken = accessToken;
+
+      await User.insertMany([aUser2]);
+      aUser2.password = password;
+      accessTokenNotAdmin = (await User.findAndGenerateToken(aUser2)).accessToken;
+
+      company = await (Company({
+        name: 'Create visitor',
+        adminId: admin._id
+      })).save();
+    });
+
+    it('should throw error when no config exist', async () => {
+      return request(app)
+        .post(`/v1/companies/${ company._id }/visitors`)
+        .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
+        .expect(httpStatus.BAD_REQUEST);
+    });
+  });
 });

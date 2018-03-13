@@ -7,6 +7,8 @@ const router = express.Router();
 
 const controller = require('../../controllers/company.controller');
 const configController = require('../../controllers/config.controller');
+const visitorController = require('../../controllers/visitor.controller');
+
 const { authorize, AUTHORIZED } = require('../../middlewares/auth');
 const {
   createCompany,
@@ -107,7 +109,7 @@ router
    * @apiVersion 1.0.0
    * @apiName UpdateConfig
    * @apiGroup Company
-   * @apiPermission user
+   * @apiPermission company admin
    *
    * @apiHeader {String} Athorization  User's access token
    *
@@ -118,5 +120,9 @@ router
    * @apiError (Forbidden 403)      Forbidden         Only company admin can modify the config
    */
   .put(authorize(AUTHORIZED), configController.upsert);
+
+router
+  .route('/:companyId/visitors')
+  .post(authorize(AUTHORIZED), visitorController.create);
 
 module.exports = router;
