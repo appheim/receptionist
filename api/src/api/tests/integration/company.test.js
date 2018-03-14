@@ -272,8 +272,8 @@ describe('Company API', async () => {
     let adminAccessToken;
     let aUser2 = {
       email: 'aUser2@gmail.com',
-      password: passwordHashed,
-      name: 'User Two'
+      name: 'User Two',
+      password: passwordHashed
     };
     let accessTokenNotAdmin;
     let company;
@@ -283,7 +283,10 @@ describe('Company API', async () => {
       admin = user;
       adminAccessToken = accessToken;
 
+      await User.remove({ email: aUser2.email });
+      aUser2.password = passwordHashed;
       await User.insertMany([aUser2]);
+
       aUser2.password = password;
       accessTokenNotAdmin = (await User.findAndGenerateToken(aUser2)).accessToken;
 
@@ -298,6 +301,94 @@ describe('Company API', async () => {
         .post(`/v1/companies/${ company._id }/visitors`)
         .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
         .expect(httpStatus.BAD_REQUEST);
+    });
+
+    it('should create when empty config', async () => {
+      await (new Config({ companyId: company._id })).save();
+
+      return request(app)
+        .post(`/v1/companies/${ company._id }/visitors`)
+        .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
+        .expect(httpStatus.OK);
+    });
+
+    it('should throw error when nda is required', async () => {
+      await (new Config({ companyId: company._id, nda: true })).save();
+
+      await request(app)
+        .post(`/v1/companies/${ company._id }/visitors`)
+        .send({ })
+        .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
+        .expect(httpStatus.BAD_REQUEST);
+
+      return request(app)
+        .post(`/v1/companies/${ company._id }/visitors`)
+        .send({ nda: null })
+        .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
+        .expect(httpStatus.BAD_REQUEST);
+    });
+
+    it('should save when nda is required and passed in body', async () => {
+      await (new Config({ companyId: company._id, nda: true })).save();
+
+      return request(app)
+        .post(`/v1/companies/${ company._id }/visitors`)
+        .send({ nda: true })
+        .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
+        .expect(httpStatus.OK);
+    });
+
+    it('should throw error when fields are not fulfilled', async () => {
+      const fields = [{
+        name: 'Full name',
+        kind: 'text',
+        required: true
+      }];
+      await (new Config({ companyId: company._id, fields })).save();
+
+      return request(app)
+        .post(`/v1/companies/${ company._id }/visitors`)
+        .send({  })
+        .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
+        .expect(httpStatus.BAD_REQUEST);
+    });
+
+    it('should successfully create when fields are not required', async () => {
+      const fields = [{
+        name: 'Full name',
+        kind: 'text',
+        required: false
+      }];
+      await (new Config({ companyId: company._id, fields })).save();
+
+      return request(app)
+        .post(`/v1/companies/${ company._id }/visitors`)
+        .send({  })
+        .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
+        .expect(httpStatus.OK);
+    });
+
+
+    it('should successfully create when fields are fulfilled', async () => {
+      const fields = [{
+        name: 'Full name',
+        kind: 'text',
+        required: true
+      }];
+      const config = await (new Config({ companyId: company._id, fields })).save();
+
+      const body = {
+        fields: [{
+          _id: config.fields[0]._id,
+          value: 'Mario Qwerty'
+        }]
+      };
+
+      return request(app)
+        .post(`/v1/companies/${ company._id }/visitors`)
+        .send(body)
+        .set('Authorization', `Bearer ${ accessTokenNotAdmin }`)
+        .expect(httpStatus.OK);
     });
   });
 });

@@ -16,4 +16,4 @@ const visitorSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-mongoose.exports = mongoose.model('User', visitorSchema);
+module.exports = mongoose.model('Visitor', visitorSchema);
